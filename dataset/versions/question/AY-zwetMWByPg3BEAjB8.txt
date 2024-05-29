@@ -1,0 +1,27 @@
+def get_commitid(commit_url):
+    if "asf?" in commit_url:
+        Reres = re.search('p=(.+)\.git.*h=(.+)', commit_url)
+        if Reres:
+            dirname = Reres.group(1)
+            commit_id = Reres.group(2)
+        else:
+            raise ValueError
+    elif "/compare/" in commit_url:
+        dirname = commit_url.split("/compare/")[0].split('/')[-1]
+        # commit id
+        commit_id = commit_url.split("/compare/")[1]
+    elif "/commit/" in commit_url:
+        dirname = commit_url.split("/commit/")[0].split('/')[-1]
+        # commit id
+        commit_id = commit_url.split("/commit/")[1]
+    else:
+        # print(commit_url)
+        # raise ValueError
+        return 'EROOR'
+    if '#' in commit_id:
+        commit_id = commit_id.split('#')[0]
+    if commit_id.endswith('/'):
+        commit_id = commit_id[:-1]
+    return commit_id
+上述代码中p=(.+)\.git.*h=(.+)代码显示Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.,风险是Most of the regular expression engines use <code>backtracking</code> to try all possible execution paths of the regular expression when evaluating
+an input, in some cases it can cause performance issues, called <code>catastrophic backtracking</code> situations。如果在此代码中无相关风险，请回答`否`。如果有相关风险，则回答`是`。请仅以JSON格式回答，格式如下{是否有风险：`是`或者`否`, 理由：因为...}。

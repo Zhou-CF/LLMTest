@@ -1,0 +1,1 @@
+{"基本信息": {"HighLightCode": "\"221.229.212.171:25065\"", "Message": "Make sure using this hardcoded IP address \"221.229.212.171\" is safe here.", "risk": "Hardcoding IP addresses is security-sensitive"}, "回答情况": {"是否有风险": "是", "理由": "硬编码IP地址可能会导致安全风险。IP地址硬编码在代码中意味着它不能动态更改或适应不同的环境。如果IP地址发生变化，代码将无法正常工作。此外，硬编码IP地址可能会暴露敏感信息，如服务器地址，这可能会导致潜在的安全风险，如IP地址被恶意用户发现并利用。"}}

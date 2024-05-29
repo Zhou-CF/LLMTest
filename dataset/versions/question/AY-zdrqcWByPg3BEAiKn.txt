@@ -1,0 +1,167 @@
+class CrawOssIndex:
+    def __init__(self):
+        self.user_name = "zhouchenfeng23@mails.ucas.ac.cn"
+        self.password = "xxxxxxxxxx"
+        self.csrf_token = ""
+        self.session = requests.Session()
+        self.proxies = [
+            "218.95.37.11:25232",
+            "182.106.136.210:25053",
+            "122.236.5.191:17368",
+            "221.131.165.73:40159",
+            "221.131.165.73:40718",
+            "218.95.37.251:25119",
+            "119.41.207.227:19881",
+            "221.229.212.170:40251",
+            "221.229.212.173:25075",
+            "123.160.10.195:25213",
+            "221.229.212.170:40096",
+            "221.229.212.171:25065",
+            "117.86.166.245:16233",
+            "175.150.103.242:16376",
+            "121.206.211.221:20551",
+            "175.155.3.24:21565",
+            "119.41.198.69:18844",
+            "111.224.222.100:15563",
+            "27.189.134.132:20603",
+            "114.229.220.69:15269"
+        ]
+        self.proxies_failed = {}
+        self.proxies_success = {}
+
+    def get_proxy(self):
+        proxy_ip = random.choice(self.proxies)
+
+        proxy_dict = {
+            "http": f"http://{proxy_ip}",
+            # "https": f"https://{proxy_ip}",
+        }
+        print(proxy_ip)
+        return proxy_dict
+
+    def login(self):
+
+        url = "https://ossindex.sonatype.org/user/signin"
+        response = self.session.get(url=url)
+
+        # 获取 csrf_token
+        html = etree.HTML(response.text)
+        self.csrf_token = html.xpath('//*[@id="signin-form"]/input/@value')[0]
+        print(self.csrf_token)
+
+        login_url = "https://ossindex.sonatype.org/user/signin"
+        login_response = self.session.post(url=login_url, data={"email": self.user_name, "password": self.password,
+                                                                "csrf-token": self.csrf_token})
+
+    def get_inside_url(self):
+        proxy = self.get_proxy()
+        print(proxy)
+        url = "https://ossindex.sonatype.org/search?type=maven&q=org.jenkins-ci.main"
+        response = self.session.get(url, proxies=proxy)
+        html = etree.HTML(response.text)
+        url_list = html.xpath('/html/body/wrapper/main/div[3]/table/tbody/tr/td[2]/a/@href')
+
+        url_list = [x for x in url_list if 'ci.main.maven' not in x]
+
+        return url_list
+
+    def exists(self, path):
+        if not os.path.exists(path):
+            return False
+        return True
+
+    def get_data(self):
+        cve_dict = {}
+
+        # url_list = self.get_inside_url()
+        self.project = 'remoting'
+
+        url_list = [f'https://ossindex.sonatype.org/component/pkg:maven/org.jenkins-ci.main/{self.project}']
+
+        result_dict = {}
+        for url in url_list:
+            proxy = self.get_proxy()
+            response = self.session.get(url, proxies=proxy)
+            # print(response.text)
+            html = etree.HTML(response.text)
+            print('----------------------------------------------------------')
+            try:
+                data_tr = html.xpath('//main[@class="container flex-fill"]/script[2]/text()')[0].strip()
+                print(response.status_code)
+                # print(data_tr)
+            except Exception as e:
+                proxy = self.get_proxy()
+                response = self.session.get(url, proxies=proxy)
+                print('try:', response.status_code)
+                html = etree.HTML(response.text)
+                data_tr = html.xpath('//main[@class="container flex-fill"]/script[2]/text()')[0].strip()
+
+            # 使用正则表达式提取versionData
+            pattern = re.findall(r'versionData: .*}]', data_tr)[0]
+
+            data_dict = eval(pattern.split(": ")[1])
+            # print(len(data_dict))
+
+            for data in data_dict:
+                print(data)
+                cve_dict = self.read_json(f'./{self.project}.json')
+                if data['version'] in cve_dict:
+                    continue
+                if data['vulnerabilitySummary'] != "None":
+                    new_cve_dict = self.get_cve_data(cve_dict, data['version'], url)
+                    cve_dict = new_cve_dict
+                self.write_json(f'./{self.project}.json', cve_dict)
+            result_dict[url] = cve_dict
+            # print(result_dict)
+
+        return result_dict
+
+    def get_cve_data(self, cve_dict, version, uri):
+        # print(cve_dict)
+        url = f"{uri}@" + version
+        print(url)
+        proxy = self.get_proxy()
+        response = self.session.get(url, proxies=proxy)
+        time.sleep(1)
+        print(response.status_code)
+        if response.status_code == 429:
+            raise ConnectionError
+        html = etree.HTML(response.text)
+        cve_text = html.xpath('/html/body/wrapper/main/div[3]/table/tbody/tr/td/a/text()')
+
+        for cve in cve_text:
+            cve_pattern = r'CVE-\d{4}-\d+'
+            # print(cve)
+            matches = re.findall(cve_pattern, cve)
+            if len(matches) > 0:
+                if cve_dict.get(version):
+                    cve_dict[version].append(matches[0])
+                else:
+                    cve_dict[version] = [matches[0]]
+        # print(cve_dict)
+        return cve_dict
+
+
+
+        #     print(matches)
+        #     if cve_dict.get(matches[0]):
+        #         cve_dict[matches[0]].append(version)
+        #     else:
+        #         cve_dict[matches[0]] = [version]
+        # return cve_dict
+
+        # for match in matches:
+        #     print(match)
+        # print(cve)
+    def read_json(self, file_path):
+        if not self.exists(f'./{self.project}.json'):
+            cont = {}
+        else:
+            with open(file_path, 'r') as f:
+                cont = json.loads(f.read())
+        return cont
+
+    def write_json(self, file_path, result):
+        with open(file_path, 'w') as f:
+            f.write(json.dumps(result))
+上述代码中random.choice(self.proxies)代码显示Make sure that using this pseudorandom number generator is safe here.,风险是Using pseudorandom number generators (PRNGs) is security-sensitive。如果在此代码中无相关风险，请回答`否`。如果有相关风险，则回答`是`。请仅以JSON格式回答，格式如下{是否有风险：`是`或者`否`, 理由：因为...}。

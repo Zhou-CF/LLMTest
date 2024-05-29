@@ -1,0 +1,21 @@
+for file in os.listdir(steady_cve_path):
+    print(file)
+    # ch.qos.logback_logback-classic_1.1.11_result.json
+    gav = re.search('(.+)_(.+)_(\d.+)_result.json', file)
+    g, a, v = gav.group(1), gav.group(2), gav.group(3)
+    # dep_file = '-'.join([g, a, v])
+    dep_file = file
+    # if dep_file != 'org.neo4j-neo4j-3.5.0-rc01':
+    #     continue
+    if dep_file in dep_path_set:
+        cve_cont = read_json(os.path.join(steady_cve_path, file))
+        dep_cont = read_json(os.path.join(steady_dep_path, dep_file))
+        # print(dep_file)
+        data = deal_dep_cve(dep_cont, cve_cont, ':'.join([g,a,v]))
+        # print(data)
+
+        project_json = '_'.join([g, a, v]) + '.json'
+        # print(project_json)
+        save_json(os.path.join(save_dir, project_json), data)
+上述代码中(.+)_(.+)_(\d.+)_result.json代码显示Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.,风险是Most of the regular expression engines use <code>backtracking</code> to try all possible execution paths of the regular expression when evaluating
+an input, in some cases it can cause performance issues, called <code>catastrophic backtracking</code> situations。如果在此代码中无相关风险，请回答`否`。如果有相关风险，则回答`是`。请仅以JSON格式回答，格式如下{是否有风险：`是`或者`否`, 理由：因为...}。

@@ -1,0 +1,18 @@
+for file in files:
+    if 'struts' in file:
+        # org.example_struts2-core_2.3.24.3-SNAPSHOT_result.json
+        AV = re.search('org.example_(.*)_(.*)-SNAPSHOT_result.json', file)
+        A, V = AV.group(1), AV.group(2)
+        all_version.append(V)
+        cont = read_json(os.path.join(steady_path, file))
+        for key in cont:
+            if 'struts' not in key:
+                continue
+            if type(cont[key]) == dict and 'Vul_list' in cont[key]:
+                vul_list = cont[key]['Vul_list']
+                for cve in vul_list:
+                    temp = cve_res.get(cve, [])
+                    temp.append(V)
+                    cve_res[cve] = temp
+上述代码中org.example_(.*)_(.*)-SNAPSHOT_result.json代码显示Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.,风险是Most of the regular expression engines use <code>backtracking</code> to try all possible execution paths of the regular expression when evaluating
+an input, in some cases it can cause performance issues, called <code>catastrophic backtracking</code> situations。如果在此代码中无相关风险，请回答`否`。如果有相关风险，则回答`是`。请仅以JSON格式回答，格式如下{是否有风险：`是`或者`否`, 理由：因为...}。

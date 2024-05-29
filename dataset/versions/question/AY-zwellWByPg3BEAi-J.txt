@@ -1,0 +1,44 @@
+for project in project_dep:
+    if project != "org.elasticsearch:elasticsearch:7.8.1":
+        continue
+    res[project] = {}
+    for dep in project_dep[project]:
+        res[project][dep] = {}
+        print(project)
+        for key in dep_cve_commit[dep]:
+            for cve in dep_cve_commit[dep][key]:
+                res[project][dep][cve] = []
+                for commit_url in dep_cve_commit[dep][key][cve]:
+                    commit_url = commit_url.strip()
+                    if "asf?" in commit_url:
+                        Reres = re.search('p=(.+)\.git.*h=(.+)', commit_url)
+                        if Reres:
+                            dirname = Reres.group(1)
+                            commit_id = Reres.group(2)
+                        else:
+                            raise ValueError
+                    elif "/compare/" in commit_url:
+                        dirname = commit_url.split("/compare/")[0].split('/')[-1]
+                        # commit id
+                        commit_id = commit_url.split("/compare/")[1]
+                    elif "/commit/" in commit_url:
+                        dirname = commit_url.split("/commit/")[0].split('/')[-1]
+                        # commit id
+                        commit_id = commit_url.split("/commit/")[1]
+                    else:
+                        # raise ValueError
+                        print(commit_url)
+                        continue
+                    if commit_id[-1] == "/":
+                        commit_id = commit_id[:-1]
+                    commit_id = commit_id.split('#')[0]
+                    try:
+                        func_cont = read_json(os.path.join(commit_func, commit_id+'.json'))
+                    except:
+                        need_amend.append(commit_id)
+                        continue
+                    if func_cont["Error"]:
+                        need_amend.append(commit_id+'.json')
+                    res[project][dep][cve] += func_cont["Correct"]
+上述代码中p=(.+)\.git.*h=(.+)代码显示Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.,风险是Most of the regular expression engines use <code>backtracking</code> to try all possible execution paths of the regular expression when evaluating
+an input, in some cases it can cause performance issues, called <code>catastrophic backtracking</code> situations。如果在此代码中无相关风险，请回答`否`。如果有相关风险，则回答`是`。请仅以JSON格式回答，格式如下{是否有风险：`是`或者`否`, 理由：因为...}。

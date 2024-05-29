@@ -1,0 +1,10 @@
+for file in os.listdir(path):
+    # org.example_jackson-databind_2.13.5-SNAPSHOT_result.json
+    AV = re.search('org.example_(.*)_(\d.*)-SNAPSHOT_result.json', file)
+    a, v = AV.group(1), AV.group(2)
+    # print(a,v)
+    if re.search('[a-zA-Z]', v):
+        continue
+    num[a] += 1
+上述代码中org.example_(.*)_(\d.*)-SNAPSHOT_result.json代码显示Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.,风险是Most of the regular expression engines use <code>backtracking</code> to try all possible execution paths of the regular expression when evaluating
+an input, in some cases it can cause performance issues, called <code>catastrophic backtracking</code> situations。如果在此代码中无相关风险，请回答`否`。如果有相关风险，则回答`是`。请仅以JSON格式回答，格式如下{是否有风险：`是`或者`否`, 理由：因为...}。

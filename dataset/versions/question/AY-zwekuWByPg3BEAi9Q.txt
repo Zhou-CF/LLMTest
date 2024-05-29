@@ -1,0 +1,17 @@
+for row in pre_cont[2:]:
+    [project, dep, cve, commit_url, func] = row
+    # already.add(commit_url)
+    if commit_url in ["1.7.0"]:
+        continue
+    if commit_url.startswith("http://svn.apache.org") or commit_url.startswith("https://svn.apache.org"):
+        continue
+    # print(commit_url)
+    commit = get_commit(commit_url)
+    func = format_func(func)
+    print(commit)
+    already.add(commit)
+    print(func)
+    print()
+    save_json(f"D:\\新项目\\数据区\\3可达性分析\\pre_commit\\{commit}.json", func)
+上述代码中"http://svn.apache.org"代码显示Using http protocol is insecure. Use https instead,风险是Clear-text protocols such as <code>ftp</code>, <code>telnet</code>, or <code>http</code> lack encryption of transported data, as well as the
+capability to build an authenticated connection。如果在此代码中无相关风险，请回答`否`。如果有相关风险，则回答`是`。请仅以JSON格式回答，格式如下{是否有风险：`是`或者`否`, 理由：因为...}。

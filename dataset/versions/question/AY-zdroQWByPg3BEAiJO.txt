@@ -1,0 +1,18 @@
+for file in os.listdir(path):
+    # print(file)
+    AV = re.search('org.example_(.*)_(.*)-SNAPSHOT', file)
+    A, V = AV.group(1), AV.group(2)
+
+    if re.search('[a-zA-Z]', V):
+        continue
+    # print(A, V)
+    all_version[A].append(V)
+    cont = read_json(os.path.join(path, file))
+    for key in cont:
+        if [A,V] == get_AV(key):
+            for cve in cont[key]['Vul_list']:
+                if cve in cves:
+                    versions[A].append(V)
+                    break
+上述代码中org.example_(.*)_(.*)-SNAPSHOT代码显示Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.,风险是Most of the regular expression engines use <code>backtracking</code> to try all possible execution paths of the regular expression when evaluating
+an input, in some cases it can cause performance issues, called <code>catastrophic backtracking</code> situations。如果在此代码中无相关风险，请回答`否`。如果有相关风险，则回答`是`。请仅以JSON格式回答，格式如下{是否有风险：`是`或者`否`, 理由：因为...}。

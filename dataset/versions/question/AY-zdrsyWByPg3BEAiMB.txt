@@ -1,0 +1,16 @@
+def write_pom(POM, project, G, A: list, V, save_dir):
+    tree = ET.parse(POM)
+    root = tree.getroot()
+    ET.register_namespace('', 'http://maven.apache.org/POM/4.0.0')
+    add_repositories(root)
+    for child in root:
+        if child.tag == '{http://maven.apache.org/POM/4.0.0}artifactId':
+            child.text = project
+        elif child.tag == '{http://maven.apache.org/POM/4.0.0}version':
+            child.text = V + '-SNAPSHOT'
+        elif child.tag == '{http://maven.apache.org/POM/4.0.0}dependencies':
+            if not V:
+                raise TabError
+            add_dependency(child, G, A, V)
+上述代码中'http://maven.apache.org/POM/4.0.0'代码显示Using http protocol is insecure. Use https instead,风险是Clear-text protocols such as <code>ftp</code>, <code>telnet</code>, or <code>http</code> lack encryption of transported data, as well as the
+capability to build an authenticated connection。如果在此代码中无相关风险，请回答`否`。如果有相关风险，则回答`是`。请仅以JSON格式回答，格式如下{是否有风险：`是`或者`否`, 理由：因为...}。

@@ -1,0 +1,15 @@
+for tool_result in os.listdir(all_version):
+    print(tool_result)
+    tool = tool_result.replace('_result', '')
+    for file in os.listdir(os.path.join(all_version, tool_result)):
+        # org.example_jackson-databind_2.0.0-RC1-SNAPSHOT_result
+        file_re = re.search('org.example_(.*)_(.*)-SNAPSHOT_result', file)
+        a, v = file_re.group(1), file_re.group(2)
+        if a+':'+v in black_version:
+            exists(os.path.join(save_dir, tool))
+            source = os.path.join(all_version, tool_result, file)
+            target = os.path.join(save_dir, tool, a+'-'+v+'.json')
+            print(source, target)
+            shutil.copy(source, target)
+上述代码中org.example_(.*)_(.*)-SNAPSHOT_result代码显示Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.,风险是Most of the regular expression engines use <code>backtracking</code> to try all possible execution paths of the regular expression when evaluating
+an input, in some cases it can cause performance issues, called <code>catastrophic backtracking</code> situations。如果在此代码中无相关风险，请回答`否`。如果有相关风险，则回答`是`。请仅以JSON格式回答，格式如下{是否有风险：`是`或者`否`, 理由：因为...}。

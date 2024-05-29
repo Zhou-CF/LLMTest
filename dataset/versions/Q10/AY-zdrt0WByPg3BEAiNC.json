@@ -1,0 +1,1 @@
+{"基本信息": {"HighLightCode": "'2.8.8.1'", "Message": "Make sure using this hardcoded IP address \"2.8.8.1\" is safe here.", "risk": "Hardcoding IP addresses is security-sensitive"}, "回答情况": {"是否有风险": "是", "理由": "代码中提到的'2.8.8.1'被标注为硬编码的IP地址。硬编码IP地址直接在代码中指定了一个具体的IP地址，这样做可能会带来安全风险。如果IP地址发生变化，代码将不再工作。此外，硬编码的IP地址可能会暴露敏感信息，如服务器地址等，这可能会被恶意用户利用。因此，硬编码IP地址通常被认为是不安全的做法，特别是在处理网络相关的代码时。"}}

@@ -1,0 +1,21 @@
+def match_pro(name):
+    # print("name", name)
+    # if name == "alibaba-fastjson-1.2.83_noneautotype":
+    #     return "com.alibaba_fastjson_1.2.83_noneautotype"
+    gav_list = read_json("D:\\ZCF\\Pyfile\\all\\gav_format.json")
+    try:
+        V = re.search("\d+\.\d.*", name).group()
+    except:
+        V = re.search("\d\d+", name).group()
+    A = name.split(f'-{V}')[0]
+    # print("AV",A, V)
+    def check(A, V):
+        for gav in gav_list:
+            if gav.find(A) != -1 and gav.find(V) != -1:
+                return gav
+
+    gav = check(A, V)
+    if gav:return gav
+    return check('-'.join(A.split('-')[1:]), V)
+上述代码中\d+\.\d.*代码显示Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.,风险是Most of the regular expression engines use <code>backtracking</code> to try all possible execution paths of the regular expression when evaluating
+an input, in some cases it can cause performance issues, called <code>catastrophic backtracking</code> situations。如果在此代码中无相关风险，请回答`否`。如果有相关风险，则回答`是`。请仅以JSON格式回答，格式如下{是否有风险：`是`或者`否`, 理由：因为...}。

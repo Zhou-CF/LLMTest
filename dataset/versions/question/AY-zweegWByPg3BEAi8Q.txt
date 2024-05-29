@@ -1,0 +1,21 @@
+def deal_xml(dir_path, filename, version):
+    tree = ET.parse('D:\\新项目\\数据区\\1漏洞版本\\pom模版\\jackson-databind-jackson-databind-2.0.0\\pom.xml')
+    root = tree.getroot()
+    ET.register_namespace('', 'http://maven.apache.org/POM/4.0.0')
+
+    sub1 = root.iter()
+    for i in sub1:
+        if i.tag.endswith("version"):
+            i.text = i.text.replace("2.0.0", version)
+
+        if i.tag.endswith("artifactId"):
+            i.text = filename
+
+        if i.tag.endswith("groupId") and i.text != "org.example":
+            i.text = G_A[filename]
+        if i.tag.endswith("type"):
+            i.text = type_A[filename]
+
+    save_xml(dir_path, tree)
+上述代码中'http://maven.apache.org/POM/4.0.0'代码显示Using http protocol is insecure. Use https instead,风险是Clear-text protocols such as <code>ftp</code>, <code>telnet</code>, or <code>http</code> lack encryption of transported data, as well as the
+capability to build an authenticated connection。如果在此代码中无相关风险，请回答`否`。如果有相关风险，则回答`是`。请仅以JSON格式回答，格式如下{是否有风险：`是`或者`否`, 理由：因为...}。
