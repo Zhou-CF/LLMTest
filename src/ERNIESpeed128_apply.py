@@ -7,7 +7,7 @@ def get_access_token():
     使用 API Key，Secret Key 获取access_token，替换下列示例中的应用API Key、应用Secret Key
     """
         
-    url = "https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=IUKMzgsf9O7sUpakdtj61ya6&client_secret=AUqJX4ZsNGpjQo3pDF4JchKn6sWDbkmS"
+    url = "https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=API Key&client_secret=Secret Key"
     
     payload = json.dumps("")
     headers = {
@@ -30,7 +30,7 @@ def main(question):
                 "content": question
             }
         ],
-        "temperature":0.15
+        "temperature":0.25
     })
     headers = {
         'Content-Type': 'application/json'

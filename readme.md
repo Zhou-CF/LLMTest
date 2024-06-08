@@ -1,5 +1,7 @@
 # 运行
 
+注册百度千帆的账号，然后获取模型的Api Key 和Secret Key，替换ERNIESpeed128_apply.py中的相关Key，即可调用ERNIE大模型
+
 运行程序仅需要调用main.py
 
 # 总结
@@ -23,4 +25,4 @@ question：由待审计问题的信息生成的问题，用于询问大模型
 # GPT4-o的询问
 
 ![1716988683750](image/readme/1716988683750.png)
-"# LLMTest" 
+"# LLMTest"
